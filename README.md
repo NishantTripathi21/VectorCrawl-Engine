@@ -77,7 +77,7 @@ backend/
 
 ### 1️⃣ Clone the repository
 ```bash
-git clone [https://github.com/NishantTripathi21/VectorCrawl-Engine](https://github.com/NishantTripathi21/VectorCrawl-Engine)
+git clone https://github.com/NishantTripathi21/VectorCrawl-Engine
 cd VectorCrawl-Engine/backend
 ```
 
@@ -119,7 +119,7 @@ Initiates the crawling and embedding pipeline for a specific URL.
 **Body:**
 ```json
 {
-  "url": "[https://example.com](https://example.com)"
+  "url": "https://example.com"
 }
 ```
 
