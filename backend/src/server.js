@@ -3,9 +3,13 @@ dotenv.config();
 import express from "express";
 import cors from "cors";
 import routes from "./routes/index.js";
+import path from "path";
+import { fileURLToPath } from "url";
 
-console.log("ENV Loaded? GROQ:", process.env.GROQ_API_KEY);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
+dotenv.config({ path: path.join(__dirname, "..", ".env") });
 const app = express();
 
 // Middlewares

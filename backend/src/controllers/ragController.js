@@ -1,10 +1,6 @@
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { getEmbedding } from "../processing/embedder.js";
 import { queryVectors } from "../db/queryVectors.js";
-import Groq from "groq-sdk";
-
-const groqClient = new Groq({
-  apiKey: process.env.GROQ_API_KEY,
-});
 
 export const answerQuestion = async (req, res, next) => {
   try {
@@ -13,58 +9,50 @@ export const answerQuestion = async (req, res, next) => {
     if (!question) {
       return res.status(400).json({
         success: false,
-        error: "Question is required",
+        error: "Question is required"
       });
     }
-
-    // Step 1: Convert question -> embedding
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
     const queryEmbedding = await getEmbedding(question);
-
-    // Step 2: Pinecone top-k retrieval
     const results = await queryVectors(queryEmbedding, 5);
 
     if (!results || results.length === 0) {
       return res.json({
         success: true,
-        answer: "No relevant information was found in the crawled website.",
+        answer: "No relevant information was found in the website content."
       });
     }
-
-    // Step 3: Build context from retrieved chunks
     const context = results
-      .map((match, i) => `Chunk ${i + 1}:\n${match.metadata.chunk}`)
+      .map(
+        (match, i) =>
+          `Chunk ${i + 1} from ${match.metadata.url}:\n${match.metadata.chunk}`
+      )
       .join("\n\n-----\n\n");
-
-    // Step 4: Build final RAG prompt
     const prompt = `
-You are an AI assistant. Answer the question using ONLY the provided website content below.
-If the information is not available in the content, respond: "I don't know based on the website data."
+You are an assistant. Answer the question using ONLY the website content below.
+If the answer is not present, respond exactly: "I don't know based on the website data."
 
 Website Content:
 ${context}
 
-User Question: ${question}
+User Question:
+${question}
 
 Answer:
 `;
+    const result = await model.generateContent(prompt);
 
-    // Step 5: Groq LLM call
-    const response = await groqClient.chat.completions.create({
-    model: "llama-3.1-70b-versatile",
-    messages: [{ role: "user", content: prompt }],
-    temperature: 0.0
-  });
-
-    const answer = response.choices[0].message.content;
+    const answer = result.response.text();
 
     return res.json({
       success: true,
       answer,
-      contextUsed: results.length,
+      contextUsed: results.length
     });
 
   } catch (err) {
-    console.error("RAG Error:", err);
+    console.error("Gemini RAG Error:", err.response?.data || err.message || err);
     next(err);
   }
 };
