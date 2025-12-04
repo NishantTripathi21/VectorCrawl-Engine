@@ -1,203 +1,168 @@
 # 🔍 RAG-Based Search Engine for Any Website
-A powerful **Retrieval-Augmented Generation (RAG)** engine that allows users to chat with any website. The system crawls a URL, processes the content into vector embeddings, stores them in Pinecone, and uses **Google Gemini Flash** to answer questions with zero hallucinations.
+
+A powerful full-stack web application that allows users to **crawl any website**, convert its content into vector embeddings, and **chat with the website** using AI. The system ensures complete session isolation, fast crawling, accurate RAG responses, and a smooth UI built with modern technologies.
 
 ---
 
-## 🚀 Overview
+## 🛠️ Tech Stack
 
-This project transforms static websites into interactive knowledge bases. The backend pipeline performs the following:
-1.  **Crawls** the target website (BFS traversal).
-2.  **Extracts & Cleans** HTML text (removing ads, scripts, and styles).
-3.  **Chunks** content into semantic segments.
-4.  **Embeds** text using **Jina AI**.
-5.  **Stores** vectors in **Pinecone**.
-6.  **Retrieves** context and answers user queries via **Google Gemini Flash**.
+### **Frontend**
+* **Framework:** React.js + Vite
+* **Styling:** TailwindCSS
+* **HTTP Client:** Axios
+* **State Management:** React Hooks
+
+### **Backend**
+* **Runtime:** Node.js
+* **Framework:** Express.js
+* **Crawling:** Custom BFS Crawler + Cheerio
+
+### **Vector & AI**
+* **Vector Database:** Pinecone (Namespaced storage)
+* **Embeddings:** Jina AI (`jina-embeddings-v2-base-en-768`)
+* **LLM:** Google Gemini Flash
 
 ---
 
 ## ✨ Features
 
-### 🕷️ Website Crawler
-* **BFS Strategy:** Crawls internal links systematically.
-* **Smart Extraction:** Uses Cheerio to strip unnecessary tags (scripts, styles, ads).
-* **Safety:** Handles infinite loops and duplicate pages.
+### 1. 🔎 Advanced Website Crawler
+* **BFS-Based:** Systematically crawls internal links.
+* **Clean Extraction:** Removes ads, scripts, and styles using Cheerio.
+* **Smart Chunking:** Splits text into semantic blocks optimized for LLMs.
 
-### ✂️ Intelligent Processing
-* **Text Chunking:** Splits content into 500–1000 token segments while preserving semantic meaning.
-* **Metadata Enrichment:** Tags chunks with Source URL, sequence number, and title.
-* **Token Counting:** Uses `tiktoken` for precise context window management.
+### 2. 🧬 AI Embeddings & Storage
+* **Jina AI:** Generates high-quality 768-dimensional vectors.
+* **Pinecone Namespaces:** Uses **Session IDs** to isolate data. This prevents one user's crawl from mixing with another's.
 
-### 🧠 AI & Vectors
-* **Embeddings:** Uses **Jina AI** (768 dimensions) for fast, free, and accurate vectorization.
-* **Vector Database:** **Pinecone** for storage, similarity search, and metadata filtering.
-* **LLM Integration:** **Google Gemini Flash** for high-speed, context-aware answers.
+### 3. 🤖 RAG Chat (Retrieval-Augmented Generation)
+* **Google Gemini Flash:** Provides fast, accurate answers.
+* **No Hallucinations:** Answers are strictly grounded in the retrieved website context.
+
+### 4. 🎨 Modern UI/UX
+* **State-Driven:** Clear flow from `Crawl Stage` → `Chat Stage`.
+* **Dark Mode:** Aesthetic, developer-friendly dark theme.
+* **Feedback:** Real-time loading indicators and system summaries.
+
+---
+## 📸 Screenshots
+
+### 🏠 Crawl Interface
+![Crawling](Screenshots/image.png)
+
+### 💬 Chat Interface
+![Chat-Screen](Screenshots/image-1.png)
+---
+
+## 🚦 Application Workflow
+
+1.  **🔍 Crawl:** User enters a URL. The backend crawls the site and extracts text.
+2.  **📌 Session ID:** A unique UUID (`sessionId`) is generated for the crawl.
+3.  **🗄️ Store:** Text is chunked, embedded, and stored in a specific Pinecone namespace.
+4.  **💬 Chat:** The frontend sends the `question` + `sessionId`. The backend retrieves relevant chunks and Gemini answers.
 
 ---
 
-## 🏗 Project Structure
+## 📥 Installation & Setup
 
-```text
-backend/
-│
-├─ src/
-│   ├─ crawler/
-│   │   |─ crawl.js              # BFS Crawler logic
-|   |   |─ exract.js
-|   |   |_utils.js
-│   │
-│   ├─ processing/
-│   │   ├─ chunker.js            # Text splitting & token counting
-│   │   └─ embedder.js           # Jina AI integration
-│   │
-│   ├─ db/
-│   │   ├─ pinecone.js           # DB Configuration
-│   │   ├─ storeVectors.js       # Upsert logic
-│   │   └─ queryVectors.js       # Similarity search
-│   │
-│   ├─ utils/
-│   │   └─ processCrawledPages.js # Pipeline orchestration
-│   │
-│   ├─ controllers/
-│   │   ├─ crawlController.js
-│   │   └─ ragController.js
-│   │
-│   ├─ routes/
-│   │   ├─ crawlRoutes.js
-│   │   └─ ragRoutes.js
-│   │
-│   └─ server.js                  # Entry point
-│
-├─ package.json
-└─ .env
-```
-
----
-
-## 📦 Installation & Setup
-
-### 1️⃣ Clone the repository
+### 1️⃣ Clone the Repository
 ```bash
 git clone https://github.com/NishantTripathi21/VectorCrawl-Engine
-cd VectorCrawl-Engine/backend
+cd VectorCrawl-Engine
 ```
 
-### 2️⃣ Install dependencies
-```bash
-npm install
-```
+### 2️⃣ Create Environment Files
 
-### 3️⃣ Configure Environment Variables
-Create a `.env` file in the `backend` folder and add your API keys:
-
+**A. Backend Configuration**
+Create a file named `.env` inside the `backend/` folder:
 ```env
-# Pinecone Configuration
-PINECONE_API_KEY=your_pinecone_key
-PINECONE_INDEX=rag-search
+PORT=5000
+ALLOWED_ORIGIN=http://localhost:5173
 
-# Jina AI (Embeddings)
-JINA_API_KEY=your_jina_key
-
-# Google Gemini (LLM)
-GEMINI_API_KEY=your_gemini_api_key
+# API Keys
+JINA_API_KEY=your_jina_key_here
+PINECONE_API_KEY=your_pinecone_key_here
+PINECONE_INDEX_NAME=your_index_name
+GEMINI_API_KEY=your_gemini_key_here
 ```
 
-### 4️⃣ Run the Backend
+**B. Frontend Configuration**
+Create a file named `.env.local` inside the `frontend/` folder:
+```env
+VITE_APP_URL=http://localhost:5000/
+```
+
+### 3️⃣ Install Dependencies & Run
+
+**🚀 Frontend Setup**
 ```bash
-node src/server.js
+cd frontend
+npm install
+npm run dev
 ```
-*Server runs on: `http://localhost:3000`*
+*Frontend runs on: `http://localhost:5173`*
+
+**🔧 Backend Setup**
+Open a new terminal:
+```bash
+cd backend
+npm install
+npm run dev
+```
+*Backend runs on: `http://localhost:5000`*
 
 ---
 
-## 🧠 API Endpoints
+## 🧑‍💻 Folder Structure
 
-### 1️⃣ Start Crawling
-**POST** `/api/crawl/start`
+```text
+/backend
+ ├── controllers/       # Logic for Crawl and RAG endpoints
+ ├── routes/            # API Route definitions
+ ├── crawler/           # BFS Crawler logic
+ ├── processing/        # Chunking & Embedding utilities
+ ├── utils/             # Helper functions
+ ├── db/                # Pinecone connection & queries
+ └── server.js          # Entry point
 
-Initiates the crawling and embedding pipeline for a specific URL.
-
-**Body:**
-```json
-{
-  "url": "https://example.com"
-}
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "pagesCrawled": 5,
-  "chunksCreated": 120,
-  "vectorsStored": 120
-}
-```
-
-### 2️⃣ Ask a Question (RAG)
-**POST** `/api/rag/ask`
-
-Retrieves relevant context and generates an answer.
-
-**Body:**
-```json
-{
-  "question": "What services does this website offer?"
-}
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "answer": "Based on the website content, they offer...",
-  "contextUsed": 3
-}
+/frontend
+ ├── pages/             # CrawlPage and ChatPage
+ ├── components/        # Reusable UI (Loader, MessageBubble)
+ ├── services/          # API calls (Axios)
+ ├── App.jsx            # Main Router/State
+ ├── index.css          # Tailwind imports
+ └── main.jsx           # React Root
 ```
 
 ---
 
-## 🔄 The RAG Pipeline (Under the Hood)
+## 🤝 Contribution
 
-1.  **Crawl & Extract:**
-    * Normalize URLs.
-    * Extract raw text using `Cheerio`.
-2.  **Chunking:**
-    * Split text into 500-1000 token chunks.
-    * Attach metadata (URL, Page Title).
-3.  **Embedding:**
-    * Convert text chunks to vectors using `jina-embeddings-v2-base-en`.
-4.  **Storage:**
-    * Upsert vectors to Pinecone.
-5.  **Retrieval:**
-    * User asks a question → Convert question to vector.
-    * Query Pinecone for top-k similar chunks.
-6.  **Generation:**
-    * Feed `Context + Question` to **Gemini Flash**.
-    * Gemini generates an answer based strictly on the context.
+We welcome contributions! Please follow these steps:
 
----
-
-## 📘 Future Improvements
-- [ ] **Real-time Updates:** Implement Server-Sent Events (SSE) for crawling progress.
-- [ ] **Multi-Tenancy:** Support multiple users with separate vector namespaces.
-- [ ] **Frontend:** Build a Next.js UI for the chat interface.
-- [ ] **Job Queue:** Use BullMQ to handle large crawling jobs in the background.
+1.  **Fork** the repository.
+2.  **Clone** your fork:
+    ```bash
+    git clone https://github.com/NishantTripathi21/VectorCrawl-Engine
+    ```
+3.  **Create a Branch:**
+    ```bash
+    git checkout -b feature-new-ui
+    ```
+4.  **Commit your changes:**
+    ```bash
+    git commit -m "Added a new loading animation"
+    ```
+5.  **Push** to your fork:
+    ```bash
+    git push origin feature-new-ui
+    ```
+6.  Open a **Pull Request** on the original repository.
 
 ---
 
-## 💡 Key Skills Demonstrated
-This project highlights competency in:
-* **LLM Integration & RAG Architecture:** Building industry-standard AI pipelines.
-* **Vector Search:** Implementing semantic search using Embeddings and Pinecone.
-* **Backend Engineering:** Scalable Node.js architecture with separation of concerns.
-* **Data Engineering:** Web crawling, data cleaning, and unstructured data processing.
-
----
-
-## 👨‍💻 Author
+## 👨‍💻 Developers
 
 **Nishant Tripathi**
-* **B.Tech CSE, NIT Srinagar**
-* *Role:* • Full Stack Developer • GenAI • Cloud 
-
-[GitHub](https://github.com/NishantTripathi21) | [LinkedIn](https://linkedin.com/in/nishanttripathi21)
+* *Role:* Full Stack Developer
+* *Tech:* React, Node.js, GenAI

@@ -5,9 +5,9 @@ import { getBatchEmbeddings } from "../processing/embedder.js";
 import { storeVectors } from "../db/storeVectors.js";
 import { v4 as uuidv4 } from "uuid";
 
-export async function processCrawledPages(crawledPages) {
+export async function processCrawledPages(crawledPages, sessionId) {
   try {
-    console.log("🧩 Starting chunk + embed + store pipeline");
+    console.log("🧩 Starting chunk + embed + store pipeline for session:", sessionId);
 
     // 1️⃣ Build chunks
     let allChunks = [];
@@ -25,7 +25,7 @@ export async function processCrawledPages(crawledPages) {
       throw new Error("No chunks extracted from pages");
     }
 
-    // 2️⃣ Extract raw text
+    // 2️⃣ Extract raw text list
     const textList = allChunks.map((c) => c.chunk);
 
     // 3️⃣ Generate embeddings in batch
@@ -39,15 +39,16 @@ export async function processCrawledPages(crawledPages) {
       id: uuidv4(),
       values: embedding,
       metadata: {
+        sessionId,                  // Added
         url: allChunks[i].url,
         seq: allChunks[i].seq,
         chunk: allChunks[i].chunk,
       },
     }));
 
-    // 5️⃣ Store in Pinecone
-    console.log("🟦 Storing vectors in Pinecone...");
-    await storeVectors(pineconeVectors);
+    // 5️⃣ Store in Pinecone under this sessionId namespace
+    console.log("🟦 Storing vectors in Pinecone under namespace:", sessionId);
+    await storeVectors(pineconeVectors, sessionId);
 
     console.log("🎉 Chunk + Embed + Pinecone storing DONE");
 

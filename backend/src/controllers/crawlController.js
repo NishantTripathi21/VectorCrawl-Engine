@@ -15,18 +15,22 @@ export const startCrawlProcess = async (req, res, next) => {
 
     console.log("Starting crawl pipeline for:", url);
 
+    // Create unique session ID
+    const sessionId = uuidv4();
+    console.log("Generated session ID:", sessionId);
+
     // Crawl
     const pages = await crawlWebsite(url, 20);
-
     console.log(`Crawled pages: ${pages.length}`);
 
-    //(chunk → embed → store)
-    const result = await processCrawledPages(pages);
+    // Process pages (chunk → embed → store)
+    const result = await processCrawledPages(pages, sessionId);
 
     // Final response
     return res.json({
       success: true,
       message: "Crawling + embedding + storing completed!",
+      sessionId,
       pagesCrawled: pages.length,
       ...result,
     });
