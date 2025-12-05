@@ -39,7 +39,7 @@ export async function getBatchEmbeddings(textArray) {
           Authorization: `Bearer ${process.env.JINA_API_KEY}`,
           "Content-Type": "application/json",
         },
-        timeout: 25000,
+        timeout: 35000,
       }
     );
 
