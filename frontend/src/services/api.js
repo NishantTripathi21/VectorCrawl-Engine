@@ -1,6 +1,5 @@
 import axios from "axios";
-
-const API_BASE = "http://localhost:3000";
+const API_BASE = import.meta.env.VITE_BACKEND_URL || "https://vectorcrawl-engine.onrender.com";
 let sessionId = null;
 
 export const setSessionId = (id) => {
