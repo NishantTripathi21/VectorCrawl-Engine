@@ -4,6 +4,15 @@ A powerful full-stack web application that allows users to **crawl any website**
 
 ---
 
+## 🔗 Live Deployment
+
+| Component | Link |
+| :--- | :--- |
+| **Frontend** | [**Click here to visit App**](https://vector-crawl-engine-6ilz.vercel.app/) |
+| **Backend** | [**API Server Link**](https://vectorcrawl-engine.onrender.com) |
+
+---
+
 ## 🛠️ Tech Stack
 
 ### **Frontend**
@@ -45,6 +54,7 @@ A powerful full-stack web application that allows users to **crawl any website**
 * **Feedback:** Real-time loading indicators and system summaries.
 
 ---
+
 ## 📸 Screenshots
 
 ### 🏠 Crawl Interface
@@ -52,6 +62,7 @@ A powerful full-stack web application that allows users to **crawl any website**
 
 ### 💬 Chat Interface
 ![Chat-Screen](Screenshots/image-1.png)
+
 ---
 
 ## 🚦 Application Workflow
@@ -67,7 +78,7 @@ A powerful full-stack web application that allows users to **crawl any website**
 
 ### 1️⃣ Clone the Repository
 ```bash
-git clone https://github.com/NishantTripathi21/VectorCrawl-Engine
+git clone [https://github.com/NishantTripathi21/VectorCrawl-Engine](https://github.com/NishantTripathi21/VectorCrawl-Engine)
 cd VectorCrawl-Engine
 ```
 
@@ -143,7 +154,7 @@ We welcome contributions! Please follow these steps:
 1.  **Fork** the repository.
 2.  **Clone** your fork:
     ```bash
-    git clone https://github.com/NishantTripathi21/VectorCrawl-Engine
+    git clone [https://github.com/NishantTripathi21/VectorCrawl-Engine](https://github.com/NishantTripathi21/VectorCrawl-Engine)
     ```
 3.  **Create a Branch:**
     ```bash
