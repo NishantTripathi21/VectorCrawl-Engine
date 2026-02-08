@@ -1,5 +1,5 @@
 import React from "react";
-
+import Markdown from "react-markdown"
 export default function MessageBubble({ from = "ai", text }) {
   const isAI = from === "ai";
   return (
@@ -9,7 +9,12 @@ export default function MessageBubble({ from = "ai", text }) {
             isAI ? "bg-[#2a2a2a] text-gray-200" : "bg-blue-600 text-white"
         }`}
         >
-        <div className="text-sm whitespace-pre-wrap">{text}</div>
+        <div className="text-sm whitespace-pre-wrap">
+          <div className="[all:unset]">
+            <Markdown >{text}</Markdown>
+          </div>
+          
+        </div>
       </div>
     </div>
   );
