@@ -10,10 +10,9 @@ export default function MessageBubble({ from = "ai", text }) {
         }`}
         >
         <div className="text-sm whitespace-pre-wrap">
-          <div className="[all:unset]">
-            <Markdown >{text}</Markdown>
+          <div className="markdown-reset">
+            <Markdown>{text}</Markdown>
           </div>
-          
         </div>
       </div>
     </div>
